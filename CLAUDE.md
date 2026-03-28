@@ -238,8 +238,8 @@ Build in this order, each step playable:
 
 | #     | Feature                                                 | Status      |
 | ----- | ------------------------------------------------------- | ----------- |
-| F-001 | Scaffolding (TS, Vite, Vitest, ESLint, Prettier, Husky) | Not started |
-| F-002 | Canvas + game loop with delta time                      | Not started |
+| F-001 | Scaffolding (TS, Vite, Vitest, ESLint, Prettier, Husky) | Complete    |
+| F-002 | Canvas + game loop with delta time                      | Complete    |
 | F-003 | Grid system + tile rendering                            | Not started |
 | F-004 | Player movement + camera follow                         | Not started |
 | F-005 | Mouse input + tower placement                           | Not started |
