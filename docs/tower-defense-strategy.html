@@ -1,0 +1,957 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Base Defense — Game &amp; Product Strategy</title>
+    <style>
+      :root {
+        --bg: #0f0f17;
+        --surface: #1a1a2e;
+        --border: #2a2a4a;
+        --text: #e0e0e0;
+        --text-muted: #8888aa;
+        --accent: #7c4dff;
+        --accent-light: #b388ff;
+        --gold: #ffd54f;
+        --green: #66bb6a;
+        --red: #ef5350;
+        --blue: #42a5f5;
+        --orange: #ff9800;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family:
+          "Segoe UI",
+          system-ui,
+          -apple-system,
+          sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.7;
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 40px 24px 80px;
+      }
+      h1 {
+        font-size: 2.4rem;
+        color: var(--gold);
+        margin-bottom: 8px;
+        letter-spacing: -0.5px;
+      }
+      h1 + p {
+        color: var(--text-muted);
+        margin-bottom: 40px;
+        font-size: 1.1rem;
+      }
+      h2 {
+        font-size: 1.5rem;
+        color: var(--accent-light);
+        margin-top: 48px;
+        margin-bottom: 16px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid var(--border);
+      }
+      h3 {
+        font-size: 1.15rem;
+        color: var(--gold);
+        margin-top: 32px;
+        margin-bottom: 12px;
+      }
+      p {
+        margin-bottom: 16px;
+      }
+      ul,
+      ol {
+        margin-bottom: 16px;
+        padding-left: 24px;
+      }
+      li {
+        margin-bottom: 8px;
+      }
+      strong {
+        color: #fff;
+      }
+      em {
+        color: var(--accent-light);
+        font-style: normal;
+      }
+
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 20px 24px;
+        margin: 16px 0;
+      }
+      .card h4 {
+        color: var(--gold);
+        margin-bottom: 8px;
+        font-size: 1rem;
+      }
+      .card p:last-child {
+        margin-bottom: 0;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin: 16px 0;
+      }
+      @media (max-width: 640px) {
+        .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 16px 0;
+        font-size: 0.95rem;
+      }
+      th,
+      td {
+        padding: 10px 14px;
+        border: 1px solid var(--border);
+        text-align: left;
+      }
+      th {
+        background: var(--surface);
+        color: var(--accent-light);
+        font-weight: 600;
+      }
+      td {
+        background: rgba(26, 26, 46, 0.5);
+      }
+
+      .tag {
+        display: inline-block;
+        padding: 2px 10px;
+        border-radius: 12px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        margin-right: 6px;
+      }
+      .tag-new {
+        background: var(--accent);
+        color: #fff;
+      }
+      .tag-reuse {
+        background: var(--green);
+        color: #000;
+      }
+      .tag-creative {
+        background: var(--gold);
+        color: #000;
+      }
+
+      .callout {
+        background: rgba(124, 77, 255, 0.1);
+        border-left: 4px solid var(--accent);
+        padding: 16px 20px;
+        margin: 20px 0;
+        border-radius: 0 8px 8px 0;
+      }
+      .callout strong {
+        color: var(--accent-light);
+      }
+
+      .loop-diagram {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0;
+        margin: 24px 0;
+        flex-wrap: wrap;
+      }
+      .loop-step {
+        background: var(--surface);
+        border: 2px solid var(--accent);
+        border-radius: 8px;
+        padding: 12px 18px;
+        text-align: center;
+        font-weight: 600;
+        font-size: 0.95rem;
+      }
+      .loop-arrow {
+        font-size: 1.4rem;
+        color: var(--accent);
+        padding: 0 8px;
+      }
+
+      hr {
+        border: none;
+        border-top: 1px solid var(--border);
+        margin: 48px 0;
+      }
+
+      .section-label {
+        color: var(--text-muted);
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 2px;
+        margin-bottom: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Base Defense</h1>
+    <p>
+      Game &amp; Product Strategy for Project 2 — Will's Game Dev Learning
+      Pathway
+    </p>
+
+    <!-- ===== PART 1: CONTEXT ===== -->
+
+    <h2>Where You Are Now</h2>
+
+    <p>
+      You built <strong>Bullet Survivors</strong> from scratch: game loop,
+      entities, collision, spawning, upgrades, juice. You now understand delta
+      time, update/render separation, object pooling, data-driven design, and
+      game feel. These are the <em>fundamentals</em> — they transfer to every
+      game you'll ever build.
+    </p>
+
+    <p>
+      Bullet Survivors was deliberately prescriptive — the genre was
+      well-defined, the build order was set, you followed step-by-step.
+      <strong>That was intentional:</strong> you can't make creative decisions
+      about game design until you understand how games are built.
+    </p>
+
+    <p>
+      Now you do. For the tower defense,
+      <strong>you're the creative director.</strong> The AI explains concepts
+      and implements code, but <em>you</em> decide: what towers exist, how the
+      economy works, what the map looks like, what makes your TD different from
+      every other TD. The shift is from "follow instructions" to "make decisions
+      and see them play out."
+    </p>
+
+    <hr />
+
+    <!-- ===== PART 2: THE GENRE ===== -->
+
+    <h2>What Is a Tower Defense Game?</h2>
+
+    <p>
+      Enemies follow a path toward a point you're defending (your base, a
+      village, a portal). You build <strong>towers</strong> along the path that
+      automatically attack enemies as they pass. Enemies drop
+      <strong>gold</strong> when killed. You spend gold to build more towers or
+      upgrade existing ones. Waves get harder. You lose if too many enemies
+      reach the end.
+    </p>
+
+    <h3>The Core Loop</h3>
+
+    <div class="loop-diagram">
+      <div class="loop-step">Build/Upgrade<br /><small>Spend gold</small></div>
+      <div class="loop-arrow">&rarr;</div>
+      <div class="loop-step">Defend<br /><small>Wave plays</small></div>
+      <div class="loop-arrow">&rarr;</div>
+      <div class="loop-step">Earn<br /><small>Gold from kills</small></div>
+      <div class="loop-arrow">&rarr;</div>
+      <div class="loop-step">Evaluate<br /><small>What failed?</small></div>
+      <div class="loop-arrow">&rarr;</div>
+      <div class="loop-step">Adapt<br /><small>New strategy</small></div>
+      <div class="loop-arrow">&circlearrowright;</div>
+    </div>
+
+    <p>
+      The tension comes from <strong>resource scarcity</strong>: you never have
+      enough gold to build everything you want. Every purchase is a trade-off.
+      Do you build a new tower or upgrade an existing one? Do you invest in
+      economy (gold collectors) or defense (more DPS)?
+    </p>
+
+    <div class="callout">
+      <strong>Key difference from Bullet Survivors:</strong> In BS, you ARE the
+      weapon — you move, dodge, and your upgrades modify YOUR stats. In TD,
+      you're the <em>architect</em> — you design a defense system and watch it
+      execute. The satisfaction shifts from reflexes to strategy.
+    </div>
+
+    <hr />
+
+    <!-- ===== PART 3: GAME DESIGN ===== -->
+
+    <h2>Game Design Concepts</h2>
+
+    <h3>1. Phase Structure</h3>
+
+    <p>
+      Unlike Bullet Survivors (continuous action), TD games have
+      <strong>two distinct phases</strong>:
+    </p>
+
+    <div class="grid">
+      <div class="card">
+        <h4>Build Phase</h4>
+        <p>
+          Time stops (or slows). You survey the battlefield, place/upgrade
+          towers, plan your defense. <em>This is where strategy happens.</em>
+        </p>
+        <p>Duration: unlimited or timed. Your call as creative director.</p>
+      </div>
+      <div class="card">
+        <h4>Wave Phase</h4>
+        <p>
+          Enemies spawn and march. Towers fire automatically. You watch your
+          strategy play out, maybe make emergency purchases.
+          <em>This is where strategy is tested.</em>
+        </p>
+        <p>Can you build during waves? Another creative decision.</p>
+      </div>
+    </div>
+
+    <div class="callout">
+      <strong>Creative decision for you:</strong> Some TDs let you build during
+      waves (Bloons TD). Some force you to commit before the wave starts
+      (Kingdom Rush). Building during waves is more forgiving but less
+      strategic. Which do you prefer?
+    </div>
+
+    <h3>2. Tower Types</h3>
+
+    <p>
+      Towers are the core expression of player strategy. Each type has a role —
+      the key is that <strong>no single tower works for everything</strong>,
+      forcing diverse placement.
+    </p>
+
+    <table>
+      <tr>
+        <th>Archetype</th>
+        <th>Role</th>
+        <th>Strength</th>
+        <th>Weakness</th>
+        <th>Example</th>
+      </tr>
+      <tr>
+        <td><strong>Shooter</strong></td>
+        <td>Single-target DPS</td>
+        <td>High damage per shot</td>
+        <td>One enemy at a time</td>
+        <td>Arrow tower</td>
+      </tr>
+      <tr>
+        <td><strong>Splash</strong></td>
+        <td>Area damage</td>
+        <td>Hits groups</td>
+        <td>Low single-target</td>
+        <td>Cannon, bomb tower</td>
+      </tr>
+      <tr>
+        <td><strong>Slow</strong></td>
+        <td>Crowd control</td>
+        <td>Makes everything else better</td>
+        <td>No damage alone</td>
+        <td>Ice tower, mud trap</td>
+      </tr>
+      <tr>
+        <td><strong>Sniper</strong></td>
+        <td>Long range priority</td>
+        <td>Huge range + damage</td>
+        <td>Very slow fire rate</td>
+        <td>Lightning spire</td>
+      </tr>
+      <tr>
+        <td><strong>Economy</strong></td>
+        <td>Gold generation</td>
+        <td>Pays for itself over time</td>
+        <td>Does nothing defensively</td>
+        <td>Gold mine, tax collector</td>
+      </tr>
+    </table>
+
+    <div class="callout">
+      <strong>Creative decisions for you:</strong> What are YOUR tower types?
+      The archetypes above are the genre standard, but you could invent new
+      ones. A tower that teleports enemies backward? A tower that buffs adjacent
+      towers? A tower that converts enemies? These are <em>your</em> choices.
+    </div>
+
+    <h3>3. Enemy Types</h3>
+
+    <p>
+      Enemies exist to <strong>invalidate one-dimensional strategies</strong>.
+      Each type should force the player to diversify.
+    </p>
+
+    <table>
+      <tr>
+        <th>Archetype</th>
+        <th>What it does</th>
+        <th>Countered by</th>
+      </tr>
+      <tr>
+        <td><strong>Standard</strong></td>
+        <td>Walks at normal speed, normal HP</td>
+        <td>Anything (baseline)</td>
+      </tr>
+      <tr>
+        <td><strong>Fast</strong></td>
+        <td>Runs past slow towers</td>
+        <td>Slow towers + splash</td>
+      </tr>
+      <tr>
+        <td><strong>Tank</strong></td>
+        <td>Absorbs massive damage</td>
+        <td>High DPS (sniper, upgraded shooter)</td>
+      </tr>
+      <tr>
+        <td><strong>Swarm</strong></td>
+        <td>Many small enemies at once</td>
+        <td>Splash damage</td>
+      </tr>
+      <tr>
+        <td><strong>Flying</strong></td>
+        <td>Ignores walls and ground towers</td>
+        <td>Anti-air towers (forces build diversity)</td>
+      </tr>
+      <tr>
+        <td><strong>Shield</strong></td>
+        <td>Immune to first N hits / has armor</td>
+        <td>Sustained DPS, armor-piercing</td>
+      </tr>
+      <tr>
+        <td><strong>Healer</strong></td>
+        <td>Heals nearby enemies</td>
+        <td>Sniper (priority targeting)</td>
+      </tr>
+    </table>
+
+    <p>
+      The interplay between tower types and enemy types IS the strategy. A
+      well-designed TD has moments where the player says "I need to build X
+      because the next wave has Y."
+    </p>
+
+    <h3>4. Economy Design</h3>
+
+    <p>
+      The economy is the <strong>pacing mechanism</strong>. Too much gold = no
+      tension (build everything). Too little = no agency (can't adapt).
+    </p>
+
+    <div class="card">
+      <h4>Income sources</h4>
+      <p>
+        <strong>Kill gold:</strong> Each enemy drops gold on death. Base income.
+        Scales with enemy difficulty.<br />
+        <strong>Wave bonus:</strong> Bonus gold for completing a wave with no
+        leaks. Rewards clean play.<br />
+        <strong>Interest/passive:</strong> Gold per second or per wave from
+        economy towers. Rewards early investment.<br />
+        <strong>Player-controlled:</strong> "Send next wave early for bonus
+        gold" — risk/reward trade-off.
+      </p>
+    </div>
+
+    <div class="card">
+      <h4>Spending categories</h4>
+      <p>
+        <strong>New towers:</strong> Expand coverage. High upfront cost.<br />
+        <strong>Tower upgrades:</strong> Improve existing towers. Usually more
+        efficient than new towers.<br />
+        <strong>Walls:</strong> Redirect enemy pathing. Cheap but strategic.<br />
+        <strong>Special abilities:</strong> One-time powers (airstrike, freeze
+        all, heal base). Burst spending.
+      </p>
+    </div>
+
+    <div class="callout">
+      <strong>Creative decisions for you:</strong> How expensive are towers? Can
+      you sell towers for a refund (full? partial? none?)? Is there interest on
+      banked gold? Can you "speed up" waves for bonus gold? These dials control
+      the game's feel: generous economy = casual fun, tight economy = hardcore
+      strategy.
+    </div>
+
+    <h3>5. Map &amp; Path Design</h3>
+
+    <div class="callout">
+      <strong>Decision made:</strong> Will chose <em>open field with free building</em>. No fixed paths, no predefined lanes. Enemies spawn from outside and charge at the player, walls, or structures. Walls block pathing — enemies pathfind around them using A*. When walls are built or destroyed, paths recalculate dynamically. This is the most strategically deep option and requires A* pathfinding as a core system.
+    </div>
+
+    <p>The open-field design means:</p>
+    <ul>
+      <li><strong>Player chooses the battlefield.</strong> No map dictates where towers go — you create the geometry.</li>
+      <li><strong>Walls are strategic tools.</strong> Not just defense — they shape enemy pathing, create kill zones, and force enemies through tower coverage.</li>
+      <li><strong>Dynamic recalculation.</strong> Every time a wall is placed or destroyed, enemy paths update. Building a wall that blocks the only route must be prevented (enemies need at least one valid path).</li>
+      <li><strong>Enemies can break walls.</strong> Walls have health. Some enemy types specifically target walls. This prevents "perfect maze" solutions and forces active defense.</li>
+    </ul>
+
+    <h3>5b. Enemy AI Behaviors</h3>
+
+    <div class="callout">
+      <strong>Decision made:</strong> Will designed a per-enemy-type behavior system. Each enemy type has a <code>behavior</code> field in its config that determines its AI strategy. This is the core difficulty curve — new behavior types force the player to adapt defenses.
+    </div>
+
+    <table>
+      <tr><th>Behavior</th><th>Description</th><th>Strategic Role</th></tr>
+      <tr>
+        <td><strong>Charge Player</strong></td>
+        <td>Pathfinds directly to the player. Attacks any structure blocking its path.</td>
+        <td>Direct pressure — forces the player to stay mobile and not turtle.</td>
+      </tr>
+      <tr>
+        <td><strong>Wall Breaker</strong></td>
+        <td>Targets the nearest wall or structure first. Only goes for the player if the path is already clear.</td>
+        <td>Forces wall reinforcement. Punishes thin perimeters and single-layer walls.</td>
+      </tr>
+      <tr>
+        <td><strong>Weak Spot Scout</strong></td>
+        <td>Evaluates wall health and thickness across the perimeter. Targets the weakest point.</td>
+        <td>Rewards even defense distribution. Punishes neglecting one side.</td>
+      </tr>
+      <tr>
+        <td><strong>Horde</strong></td>
+        <td>Accumulates at spawn point until a threshold count is reached, then all charge together as a group.</td>
+        <td>Punishes over-extension. Rewards maintaining reserve capacity and splash towers.</td>
+      </tr>
+    </table>
+
+    <p>This system is <strong>data-driven</strong> — adding a new behavior is adding a new strategy function and a config entry, not restructuring code. The same pattern used for enemy types in Bullet Survivors, applied to AI decision-making.</p>
+
+    <h3>6. Progression &amp; Replayability</h3>
+
+    <p>What makes a player start a new run?</p>
+
+    <ul>
+      <li>
+        <strong>Tower upgrades:</strong> Each tower has 2-3 upgrade tiers.
+        Upgrading transforms the tower (new visual, new ability). Mid-run
+        progression.
+      </li>
+      <li>
+        <strong>Difficulty scaling:</strong> Waves get harder. Enemy stats
+        scale. New enemy types introduced. Tension escalates.
+      </li>
+      <li>
+        <strong>Score/rating:</strong> Stars per level (no leaks = 3 stars).
+        Completionists replay for perfect scores.
+      </li>
+      <li>
+        <strong>Unlock system:</strong> Beating levels unlocks new tower types
+        or abilities for future runs. Cross-run progression.
+      </li>
+      <li>
+        <strong>Endless mode:</strong> After the campaign waves, keep going
+        until you lose. Leaderboard-style.
+      </li>
+    </ul>
+
+    <hr />
+
+    <!-- ===== PART 4: GAME DEV CONCEPTS ===== -->
+
+    <h2>New Game Dev Concepts (Not in Bullet Survivors)</h2>
+
+    <p class="section-label">What you'll learn building this</p>
+
+    <h3>1. Grid / Tile System <span class="tag tag-new">New</span></h3>
+
+    <p>
+      Towers snap to a grid. The game world is divided into cells (e.g., 32x32
+      pixels). Each cell is either empty, path, tower, or wall. Mouse position
+      converts to grid coordinates:
+      <code>gridX = Math.floor(mouseX / CELL_SIZE)</code>.
+    </p>
+
+    <p>
+      <strong>Why it matters:</strong> Every builder game (Factorio, SimCity,
+      Minecraft) uses a grid. This is the foundation of any "place stuff in a
+      world" mechanic.
+    </p>
+
+    <h3>2. Pathfinding (A*) <span class="tag tag-new">New</span></h3>
+
+    <p>
+      If you allow maze building / wall placement, enemies need to find the
+      shortest path around obstacles. A* is the standard algorithm: it explores
+      nodes in order of "distance traveled + estimated distance remaining." It
+      finds the optimal path efficiently.
+    </p>
+
+    <p>
+      <strong>Why it matters:</strong> Pathfinding is one of the most
+      universally useful algorithms in game dev. Every RTS, every RPG with AI
+      movement, every navigation system uses some form of A*. Learning it here
+      means you can use it everywhere.
+    </p>
+
+    <p>
+      <strong>Note:</strong> If you choose fixed paths (no maze building), you
+      can skip A* entirely. The path is just an array of waypoints that enemies
+      follow in order.
+    </p>
+
+    <h3>3. Game State Machine <span class="tag tag-new">New</span></h3>
+
+    <p>
+      Bullet Survivors had three states: running, paused (level-up), game over.
+      Tower defense has more:
+      <strong
+        >main menu &rarr; build phase &rarr; wave phase &rarr; wave complete
+        &rarr; build phase &rarr; ... &rarr; game over</strong
+      >. A state machine formalizes this: each state defines what update/render
+      logic runs, what input is valid, and what transitions are allowed.
+    </p>
+
+    <p>
+      <strong>Why it matters:</strong> Every game with menus, cutscenes,
+      inventories, or dialogue uses a state machine. It's the standard way to
+      manage "what mode is the game in right now?"
+    </p>
+
+    <h3>4. Mouse/Click Interaction <span class="tag tag-new">New</span></h3>
+
+    <p>
+      Bullet Survivors was keyboard-only. TD requires mouse: click to select
+      tower type, click to place, click to select placed tower, click to
+      upgrade. This introduces hit-testing ("what did the player click on?"),
+      hover states, drag previews, and coordinate conversion (screen &rarr;
+      world &rarr; grid).
+    </p>
+
+    <p>
+      <strong>Why it matters:</strong> Most games beyond pure action use
+      mouse/touch interaction. The coordinate conversion chain (screen &rarr;
+      camera &rarr; world &rarr; grid) is the key skill.
+    </p>
+
+    <h3>5. Tower Targeting AI <span class="tag tag-new">New</span></h3>
+
+    <p>Each tower decides which enemy to shoot. Common strategies:</p>
+    <ul>
+      <li>
+        <strong>First:</strong> Target the enemy closest to the exit (most
+        dangerous)
+      </li>
+      <li>
+        <strong>Closest:</strong> Target the nearest enemy to the tower (highest
+        chance to hit)
+      </li>
+      <li>
+        <strong>Strongest:</strong> Target the highest-HP enemy (focus fire)
+      </li>
+      <li>
+        <strong>Weakest:</strong> Target the lowest-HP enemy (secure kills for
+        gold)
+      </li>
+    </ul>
+
+    <p>
+      <strong>Why it matters:</strong> AI decision-making is a core game dev
+      skill. Targeting priority is a simple version of the broader problem "how
+      do game entities make decisions?"
+    </p>
+
+    <h3>6. Range Visualization <span class="tag tag-new">New</span></h3>
+
+    <p>
+      When placing a tower, show its attack range as a translucent circle. When
+      hovering over a placed tower, show the same. This is
+      <strong>information design</strong> — making the game's rules visible so
+      the player can make informed decisions.
+    </p>
+
+    <p>
+      <strong>Why it matters:</strong> Games communicate constantly through
+      visual feedback. Range circles, valid/invalid placement colors, path
+      highlighting — these are all forms of "show, don't tell." This is the
+      UI/UX skill that makes games intuitive vs confusing.
+    </p>
+
+    <h3>7. Economy System <span class="tag tag-new">New</span></h3>
+
+    <p>
+      Track gold, validate purchases ("can the player afford this?"), handle
+      refunds on tower selling. Sounds simple but it's a
+      <strong>resource management system</strong> — the same pattern used in
+      every game with currencies, inventories, or crafting.
+    </p>
+
+    <hr />
+
+    <!-- ===== PART 5: TRANSFERABLE ===== -->
+
+    <h2>What Transfers from Bullet Survivors</h2>
+
+    <p class="section-label">You already know how to build these</p>
+
+    <table>
+      <tr>
+        <th>Pattern</th>
+        <th>Bullet Survivors</th>
+        <th>Tower Defense</th>
+      </tr>
+      <tr>
+        <td><strong>Entity system</strong></td>
+        <td>
+          Player, Enemy, Projectile, XpGem — all with position, radius, active,
+          update, render
+        </td>
+        <td>Tower, Enemy, Projectile, Wall — same shape, same patterns</td>
+      </tr>
+      <tr>
+        <td><strong>Data-driven configs</strong></td>
+        <td>EnemyConfig, WeaponStats — one class, many data sets</td>
+        <td>TowerConfig, EnemyConfig — exact same pattern</td>
+      </tr>
+      <tr>
+        <td><strong>Object pooling</strong></td>
+        <td>Projectile pool, particle pool, gem pool</td>
+        <td>Tower projectile pool, particle pool (explosions)</td>
+      </tr>
+      <tr>
+        <td><strong>Wave spawner</strong></td>
+        <td>Continuous spawning with wave milestones, stat scaling</td>
+        <td>
+          Discrete wave definitions with scaling — same concept, different
+          pacing
+        </td>
+      </tr>
+      <tr>
+        <td><strong>Collision detection</strong></td>
+        <td>Circle-circle with distance²</td>
+        <td>"Is enemy within tower range?" — same distance check</td>
+      </tr>
+      <tr>
+        <td><strong>Update/render separation</strong></td>
+        <td>update(dt) modifies state, render(ctx) draws</td>
+        <td>Identical pattern. Game loop is game loop.</td>
+      </tr>
+      <tr>
+        <td><strong>Juice effects</strong></td>
+        <td>Particles, damage numbers, screen shake, flash</td>
+        <td>
+          Tower shot effects, explosion particles, gold numbers, build sound
+        </td>
+      </tr>
+      <tr>
+        <td><strong>Camera system</strong></td>
+        <td>Follow player, world→screen transform</td>
+        <td>Pan/zoom camera (player controls camera, not a character)</td>
+      </tr>
+    </table>
+
+    <hr />
+
+    <!-- ===== PART 6: YOUR ROLE ===== -->
+
+    <h2>Your Role: Creative Director</h2>
+
+    <p class="section-label">Decisions that need your vision</p>
+
+    <p>
+      In Bullet Survivors, the genre dictated most decisions — Vampire Survivors
+      is well-understood, and the implementation order was clear. Tower defense
+      is a <strong>broader genre</strong> with more room for creative
+      interpretation. Here's what you'll need to decide:
+    </p>
+
+    <div class="grid">
+      <div class="card">
+        <h4>Theme &amp; Setting</h4>
+        <p>
+          Medieval castle? Sci-fi base? Fantasy dungeon? The theme determines
+          art direction, tower names, enemy designs, and narrative framing.
+        </p>
+      </div>
+      <div class="card">
+        <h4>Map Philosophy</h4>
+        <p>
+          Fixed paths, open mazes, or hybrid? Single map or campaign of maps?
+          This is the biggest architectural decision — it determines whether you
+          need pathfinding.
+        </p>
+      </div>
+      <div class="card">
+        <h4>Tower Design</h4>
+        <p>
+          What are your towers? What do they do? What are their upgrade paths?
+          This is the creative core — the towers ARE the game.
+        </p>
+      </div>
+      <div class="card">
+        <h4>Economy Feel</h4>
+        <p>
+          Generous (build lots, experiment freely) or tight (every purchase
+          matters, mistakes are costly)? This controls casual vs hardcore feel.
+        </p>
+      </div>
+      <div class="card">
+        <h4>Player Role <span class="tag tag-reuse">Decided</span></h4>
+        <p>
+          <strong>Hero unit you control directly</strong> — WASD movement, can fight enemies
+          and collect gold. The Bullet Survivors combat feel carries over. Part builder, part fighter.
+        </p>
+      </div>
+      <div class="card">
+        <h4>Your "Hook" <span class="tag tag-reuse">Decided</span></h4>
+        <p>
+          <strong>Genre blend:</strong> TD + base building + action. Open-field building,
+          destructible walls, per-enemy-type AI behaviors (charge, wall-break, scout, horde),
+          and a controllable player character. No other TD plays quite like this.
+        </p>
+      </div>
+    </div>
+
+    <hr />
+
+    <!-- ===== PART 7: PROPOSED BUILD ORDER ===== -->
+
+    <h2>Suggested Implementation Order</h2>
+
+    <p class="section-label">
+      A starting point — you can reorder based on your vision
+    </p>
+
+    <table>
+      <tr>
+        <th>#</th>
+        <th>Feature</th>
+        <th>New concepts</th>
+        <th>Status</th>
+      </tr>
+      <tr>
+        <td>1</td>
+        <td>Grid system + tile rendering</td>
+        <td><span class="tag tag-new">Grid/tiles</span></td>
+        <td>Foundation</td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td>Tower placement (mouse click on grid)</td>
+        <td>
+          <span class="tag tag-new">Mouse input</span>
+          <span class="tag tag-new">UI interaction</span>
+        </td>
+        <td>First playable</td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td>Enemies + fixed path (waypoints)</td>
+        <td>
+          <span class="tag tag-reuse">Entity system</span>
+          <span class="tag tag-reuse">Wave spawner</span>
+        </td>
+        <td>Gameplay begins</td>
+      </tr>
+      <tr>
+        <td>4</td>
+        <td>Tower shooting + enemy damage</td>
+        <td>
+          <span class="tag tag-new">Targeting AI</span>
+          <span class="tag tag-reuse">Collision</span>
+          <span class="tag tag-reuse">Object pool</span>
+        </td>
+        <td>Core loop</td>
+      </tr>
+      <tr>
+        <td>5</td>
+        <td>Economy (gold, buying, upgrading)</td>
+        <td><span class="tag tag-new">Economy system</span></td>
+        <td>Strategy emerges</td>
+      </tr>
+      <tr>
+        <td>6</td>
+        <td>Build phase / wave phase state machine</td>
+        <td><span class="tag tag-new">State machine</span></td>
+        <td>Proper flow</td>
+      </tr>
+      <tr>
+        <td>7</td>
+        <td>Wall building + pathfinding (A*)</td>
+        <td><span class="tag tag-new">Pathfinding</span></td>
+        <td>Deep strategy</td>
+      </tr>
+      <tr>
+        <td>8</td>
+        <td>Tower variety + enemy variety</td>
+        <td><span class="tag tag-reuse">Data-driven configs</span></td>
+        <td>Diversity</td>
+      </tr>
+      <tr>
+        <td>9</td>
+        <td>Juice pass (particles, numbers, effects)</td>
+        <td><span class="tag tag-reuse">Juice</span></td>
+        <td>Polish</td>
+      </tr>
+      <tr>
+        <td>10</td>
+        <td>Player hero unit (optional genre blend)</td>
+        <td>
+          <span class="tag tag-reuse">Player movement</span>
+          <span class="tag tag-new">Genre blend</span>
+        </td>
+        <td>Your unique hook</td>
+      </tr>
+    </table>
+
+    <p>
+      <span class="tag tag-new">New</span> = concept you'll learn for the first
+      time. <span class="tag tag-reuse">Reuse</span> = pattern you already know
+      from Bullet Survivors.
+    </p>
+
+    <div class="callout">
+      <strong>This order is a suggestion, not a prescription.</strong> As
+      creative director, you can reorder based on what excites you most. Want to
+      build the economy system first? Go for it. Want to skip pathfinding and
+      use fixed paths? That's valid. The AI will explain each concept when you
+      reach it, but <em>you</em> decide the sequence.
+    </div>
+
+    <hr />
+
+    <h2>Next Steps</h2>
+
+    <ol>
+      <li>
+        <strong>Pick a theme and setting.</strong> This doesn't affect
+        architecture but it affects everything about how the game feels.
+      </li>
+      <li>
+        <strong>Decide: fixed path or maze building?</strong> This is the
+        biggest technical fork. Fixed path = simpler, faster to build. Maze =
+        deeper strategy, needs A*.
+      </li>
+      <li>
+        <strong>Sketch your tower ideas.</strong> Even just names and one-line
+        descriptions. "Ice Tower: slows enemies in range. Cannon: splash damage,
+        slow fire rate."
+      </li>
+      <li>
+        <strong>Decide on the player-character angle.</strong> Pure TD? Or the
+        hybrid you described (player can run out, fight, collect gold)?
+      </li>
+      <li>
+        <strong>Start building.</strong> Same tech stack (TypeScript, Canvas 2D,
+        Vite). Same quality process (BRFs, pre-commit hooks, tests). But this
+        time, you're co-designing, not following.
+      </li>
+    </ol>
+
+    <p
+      style="
+        color: var(--text-muted);
+        margin-top: 48px;
+        text-align: center;
+        font-size: 0.9rem;
+      "
+    >
+      Generated for Will's game dev learning pathway &mdash; Project 2 of 5
+    </p>
+  </body>
+</html>
