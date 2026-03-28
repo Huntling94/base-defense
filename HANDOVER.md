@@ -11,15 +11,15 @@ A fully playable Vampire Survivors-style 2D auto-shooter built with TypeScript, 
 
 ### What was built
 
-| # | Feature | Key concepts |
-|---|---------|-------------|
-| F-001 | Canvas + game loop with delta time | requestAnimationFrame, delta time, update/render separation |
-| F-002 | Player movement with camera follow | Input handling, entity pattern, camera transform, diagonal normalization |
-| F-003 | Enemy spawning and wave system | Enemy AI, invincibility frames, collision detection, data-driven entities |
-| F-004 | Projectile system with auto-aim | Object pooling, auto-aim targeting, projectile lifecycle, pierce mechanic |
-| F-005 | XP gems, leveling, upgrade selection | Magnetic pickup, XP curve, upgrade system, game pause state |
-| F-006 | Juice: screen shake, particles, damage numbers | Screen shake, particle system, hit flash, knockback, time freeze |
-| F-007 | Polish: enemy variety, wave scaling, game over | 4 enemy types, wave stat scaling, restart mechanism |
+| #     | Feature                                        | Key concepts                                                              |
+| ----- | ---------------------------------------------- | ------------------------------------------------------------------------- |
+| F-001 | Canvas + game loop with delta time             | requestAnimationFrame, delta time, update/render separation               |
+| F-002 | Player movement with camera follow             | Input handling, entity pattern, camera transform, diagonal normalization  |
+| F-003 | Enemy spawning and wave system                 | Enemy AI, invincibility frames, collision detection, data-driven entities |
+| F-004 | Projectile system with auto-aim                | Object pooling, auto-aim targeting, projectile lifecycle, pierce mechanic |
+| F-005 | XP gems, leveling, upgrade selection           | Magnetic pickup, XP curve, upgrade system, game pause state               |
+| F-006 | Juice: screen shake, particles, damage numbers | Screen shake, particle system, hit flash, knockback, time freeze          |
+| F-007 | Polish: enemy variety, wave scaling, game over | 4 enemy types, wave stat scaling, restart mechanism                       |
 
 **204 tests** | **~22KB bundle** | **7 implementation briefs**
 
@@ -37,25 +37,25 @@ A fully playable Vampire Survivors-style 2D auto-shooter built with TypeScript, 
 
 ### How these transfer to Base Defense
 
-| Bullet Survivors pattern | Base Defense equivalent |
-|-------------------------|----------------------|
-| Entity system (Player, Enemy, Projectile) | Tower, Wall, Enemy, Projectile — same shape |
-| Data-driven configs (EnemyConfig) | TowerConfig, EnemyConfig, WallConfig |
-| Object pooling | Tower projectiles, particles |
-| Wave spawner with scaling | Wave definitions with enemy composition |
-| Collision detection (distance²) | "Is enemy within tower range?" |
-| Update/render separation | Identical pattern |
+| Bullet Survivors pattern                  | Base Defense equivalent                               |
+| ----------------------------------------- | ----------------------------------------------------- |
+| Entity system (Player, Enemy, Projectile) | Tower, Wall, Enemy, Projectile — same shape           |
+| Data-driven configs (EnemyConfig)         | TowerConfig, EnemyConfig, WallConfig                  |
+| Object pooling                            | Tower projectiles, particles                          |
+| Wave spawner with scaling                 | Wave definitions with enemy composition               |
+| Collision detection (distance²)           | "Is enemy within tower range?"                        |
+| Update/render separation                  | Identical pattern                                     |
 | Juice effects (particles, shake, numbers) | Tower shot effects, explosion particles, gold numbers |
-| Camera (follow, shake) | Pan/zoom camera (player controls camera) |
+| Camera (follow, shake)                    | Pan/zoom camera (player controls camera)              |
 
 ### Lessons learned (carry forward)
 
-| # | Lesson | Prevention Rule |
-|---|--------|-----------------|
-| 1 | Camera-follow on blank background makes movement invisible | Always include a visual reference frame |
-| 2 | Non-null assertions blocked by ESLint strict | Use `as T` casts or helper functions |
-| 3 | Float precision in timer tests | Use extra frames to push past thresholds |
-| 4 | Unstaged files cause lint-staged failures | Stage all modified files before committing |
+| #   | Lesson                                                     | Prevention Rule                            |
+| --- | ---------------------------------------------------------- | ------------------------------------------ |
+| 1   | Camera-follow on blank background makes movement invisible | Always include a visual reference frame    |
+| 2   | Non-null assertions blocked by ESLint strict               | Use `as T` casts or helper functions       |
+| 3   | Float precision in timer tests                             | Use extra frames to push past thresholds   |
+| 4   | Unstaged files cause lint-staged failures                  | Stage all modified files before committing |
 
 ## Design decisions already made for Base Defense
 
@@ -67,7 +67,7 @@ A fully playable Vampire Survivors-style 2D auto-shooter built with TypeScript, 
    - "wall breaker" — targets nearest wall first
    - "weak spot scout" — evaluates wall health, targets weakest point
    - "horde" — accumulates at spawn, then all charge together
-5. **A* pathfinding is mandatory** — dynamic paths recalculate when walls are built/destroyed
+5. **A\* pathfinding is mandatory** — dynamic paths recalculate when walls are built/destroyed
 6. **Will is creative director** — makes design decisions, Claude advises and implements
 
 ## What's next
