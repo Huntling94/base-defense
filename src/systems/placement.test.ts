@@ -74,40 +74,47 @@ describe('PlacementSystem', () => {
 
   describe('selection', () => {
     it('starts with no selection', () => {
+      expect(placement.state.category).toBeNull();
       expect(placement.state.selectedIndex).toBeNull();
     });
 
     it('selects tower type on number key press', () => {
       pressKey('1');
       placement.update(input, camera, grid);
+      expect(placement.state.category).toBe('tower');
       expect(placement.state.selectedIndex).toBe(0);
       releaseKey('1');
     });
 
-    it('deselects on pressing same number key', () => {
-      // Select
-      pressKey('1');
+    it('selects wall mode on Q key', () => {
+      pressKey('q');
       placement.update(input, camera, grid);
-      releaseKey('1');
-      expect(placement.state.selectedIndex).toBe(0);
+      expect(placement.state.category).toBe('wall');
+      releaseKey('q');
+    });
 
-      // Toggle off
+    it('deselects on pressing same number key', () => {
       pressKey('1');
       placement.update(input, camera, grid);
       releaseKey('1');
-      expect(placement.state.selectedIndex).toBeNull();
+      expect(placement.state.category).toBe('tower');
+
+      pressKey('1');
+      placement.update(input, camera, grid);
+      releaseKey('1');
+      expect(placement.state.category).toBeNull();
     });
 
     it('deselects on Escape', () => {
       pressKey('1');
       placement.update(input, camera, grid);
       releaseKey('1');
-      expect(placement.state.selectedIndex).toBe(0);
+      expect(placement.state.category).toBe('tower');
 
       pressKey('Escape');
       placement.update(input, camera, grid);
       releaseKey('Escape');
-      expect(placement.state.selectedIndex).toBeNull();
+      expect(placement.state.category).toBeNull();
     });
 
     it('getSelectedConfig returns config when selected', () => {

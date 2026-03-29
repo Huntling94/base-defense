@@ -129,13 +129,15 @@ export class Game {
     );
     this.placement.update(this.input, this.camera, this.grid);
 
-    // Register newly placed tower with TowerManager
+    // Handle newly placed structure
     if (this.placement.placedThisFrame) {
-      this.towerManager.registerTower(
-        this.placement.lastPlacedRow,
-        this.placement.lastPlacedCol,
-        this.placement.lastPlacedConfigIndex,
-      );
+      if (this.placement.lastPlacedCategory === 'tower') {
+        this.towerManager.registerTower(
+          this.placement.lastPlacedRow,
+          this.placement.lastPlacedCol,
+          this.placement.lastPlacedConfigIndex,
+        );
+      }
 
       // Mark all enemy paths as stale
       for (const enemy of this.enemies) {
@@ -229,15 +231,15 @@ export class Game {
   }
 
   private renderSelectedTower(): void {
-    const config = this.placement.getSelectedConfig();
-    if (!config) return;
+    const name = this.placement.getSelectedName();
+    if (!name) return;
 
     const { ctx } = this;
     ctx.fillStyle = '#ffffff';
     ctx.font = '14px monospace';
     ctx.textAlign = 'left';
     ctx.textBaseline = 'bottom';
-    ctx.fillText(`Selected: ${config.name} (Esc to cancel)`, 8, this.canvas.height - 8);
+    ctx.fillText(`Selected: ${name} (Esc to cancel)`, 8, this.canvas.height - 8);
   }
 
   private renderEnemyCount(): void {
