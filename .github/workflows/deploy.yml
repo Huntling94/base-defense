@@ -23,7 +23,8 @@ jobs:
         with:
           node-version: 24
 
-      - run: npm ci
+      - run: npm install --legacy-peer-deps
+      - run: node -e "require('jsdom'); console.log('jsdom OK')"
 
       - run: npx tsc --noEmit
       - run: npm test
