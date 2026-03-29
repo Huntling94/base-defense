@@ -2,11 +2,15 @@ import { Grid, WORLD_WIDTH, WORLD_HEIGHT } from './systems/grid';
 import { Camera } from './systems/camera';
 import { InputManager } from './systems/input';
 import { PlacementSystem } from './systems/placement';
+import { Spawner } from './systems/spawner';
+import { findPath } from './systems/pathfinding';
 import { Player } from './entities/player';
+import type { Enemy } from './entities/enemy';
 import { GridRenderer } from './rendering/grid-renderer';
 import { PlayerRenderer } from './rendering/player-renderer';
 import { TowerRenderer } from './rendering/tower-renderer';
 import { PlacementRenderer } from './rendering/placement-renderer';
+import { EnemyRenderer } from './rendering/enemy-renderer';
 
 export const MAX_DELTA_TIME = 0.1;
 export const FPS_SAMPLE_COUNT = 60;
@@ -47,15 +51,18 @@ export class Game {
   private camera: Camera;
   private input: InputManager;
   private placement: PlacementSystem;
+  private spawner: Spawner;
 
   // Entities
   private player: Player;
+  private enemies: Enemy[] = [];
 
   // Renderers
   private gridRenderer: GridRenderer;
   private playerRenderer: PlayerRenderer;
   private towerRenderer: TowerRenderer;
   private placementRenderer: PlacementRenderer;
+  private enemyRenderer: EnemyRenderer;
 
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
@@ -65,6 +72,7 @@ export class Game {
     this.camera = new Camera();
     this.input = new InputManager(canvas);
     this.placement = new PlacementSystem();
+    this.spawner = new Spawner();
 
     // Spawn player at world center
     this.player = new Player(WORLD_WIDTH / 2, WORLD_HEIGHT / 2);
@@ -73,6 +81,7 @@ export class Game {
     this.playerRenderer = new PlayerRenderer();
     this.towerRenderer = new TowerRenderer();
     this.placementRenderer = new PlacementRenderer();
+    this.enemyRenderer = new EnemyRenderer();
   }
 
   start(): void {
@@ -110,6 +119,35 @@ export class Game {
       this.input,
     );
     this.placement.update(this.input, this.camera, this.grid);
+
+    // If a tower was placed, mark all enemy paths as stale
+    if (this.placement.placedThisFrame) {
+      for (const enemy of this.enemies) {
+        enemy.pathStale = true;
+      }
+    }
+
+    // Spawn enemies
+    this.spawner.update(dt, this.enemies, this.grid, this.player);
+
+    // Update enemies
+    const playerTile = this.grid.worldToGrid(this.player.x, this.player.y);
+    for (const enemy of this.enemies) {
+      // Recompute path if stale or no path
+      if (enemy.pathStale || !enemy.hasPath()) {
+        const enemyTile = this.grid.worldToGrid(enemy.x, enemy.y);
+        const path = findPath(this.grid, enemyTile, playerTile);
+        if (path) {
+          enemy.setPath(path);
+        } else {
+          enemy.pathStale = false; // No path available, stop trying until grid changes
+        }
+      }
+      enemy.update(dt, this.grid);
+    }
+
+    // Remove arrived enemies
+    this.enemies = this.enemies.filter((e) => !e.arrived);
   }
 
   private render(): void {
@@ -127,6 +165,7 @@ export class Game {
     this.gridRenderer.render(ctx, this.grid, camera, canvas.width, canvas.height);
     this.towerRenderer.render(ctx, this.grid, camera, canvas.width, canvas.height);
     this.placementRenderer.render(ctx, this.placement);
+    this.enemyRenderer.render(ctx, this.enemies);
     this.playerRenderer.render(ctx, this.player);
 
     // Restore to screen space
@@ -136,6 +175,7 @@ export class Game {
     this.renderFps();
     this.renderCameraMode();
     this.renderSelectedTower();
+    this.renderEnemyCount();
   }
 
   private resize(): void {
@@ -173,5 +213,14 @@ export class Game {
     ctx.textAlign = 'left';
     ctx.textBaseline = 'bottom';
     ctx.fillText(`Selected: ${config.name} (Esc to cancel)`, 8, this.canvas.height - 8);
+  }
+
+  private renderEnemyCount(): void {
+    const { ctx } = this;
+    ctx.fillStyle = '#e0e0e0';
+    ctx.font = '14px monospace';
+    ctx.textAlign = 'right';
+    ctx.textBaseline = 'top';
+    ctx.fillText(`Enemies: ${this.enemies.length}`, this.canvas.width - 8, 8);
   }
 }

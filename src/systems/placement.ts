@@ -19,8 +19,10 @@ export class PlacementSystem {
     hoverTile: null,
     isValid: false,
   };
+  placedThisFrame: boolean = false;
 
   update(input: InputManager, camera: Camera, grid: Grid): void {
+    this.placedThisFrame = false;
     this.handleSelection(input);
 
     if (this.state.selectedIndex === null) {
@@ -49,6 +51,7 @@ export class PlacementSystem {
         this.state.hoverTile.col,
         this.state.selectedIndex,
       );
+      this.placedThisFrame = true;
     }
   }
 
