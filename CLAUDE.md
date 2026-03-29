@@ -246,7 +246,7 @@ Build in this order, each step playable:
 | F-005 | Mouse input + tower placement                           | Complete    |
 | F-006 | Enemies + A\* pathfinding                               | Complete    |
 | F-007 | Tower shooting + targeting AI                           | Complete    |
-| F-008 | Walls + path recalculation                              | Not started |
+| F-008 | Walls + path recalculation                              | Complete    |
 | F-009 | Economy system                                          | Not started |
 | F-010 | Build/wave phase state machine                          | Not started |
 | F-011 | Tower variety + enemy variety                           | Not started |
