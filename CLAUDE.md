@@ -230,9 +230,9 @@ Build in this order, each step playable:
 
 ## Lessons learned
 
-| #   | Lesson | Root Cause | Prevention Rule |
-| --- | ------ | ---------- | --------------- |
-|     |        |            |                 |
+| #     | Lesson                                                                                                     | Root Cause                                                            | Prevention Rule                                                                         |
+| ----- | ---------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| L-001 | Optional peer deps of vitest (jsdom) are silently skipped by npm on CI even when listed in devDependencies | npm prioritizes optional peer dep status over devDependencies listing | When adding an optional peer dep as a devDependency, add an explicit install step in CI |
 
 ## Feature registry
 
