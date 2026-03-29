@@ -243,7 +243,7 @@ Build in this order, each step playable:
 | F-003 | Grid system + tile rendering                            | Complete    |
 | F-004 | Player movement + camera follow                         | Complete    |
 | F-005 | Mouse input + tower placement                           | Complete    |
-| F-006 | Enemies + A\* pathfinding                               | Not started |
+| F-006 | Enemies + A\* pathfinding                               | Complete    |
 | F-007 | Tower shooting + targeting AI                           | Not started |
 | F-008 | Walls + path recalculation                              | Not started |
 | F-009 | Economy system                                          | Not started |
