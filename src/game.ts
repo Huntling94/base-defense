@@ -24,6 +24,9 @@ function average(arr: number[]): number {
   return sum / arr.length;
 }
 
+import { Grid } from './systems/grid';
+import { GridRenderer } from './rendering/grid-renderer';
+
 export class Game {
   private canvas: HTMLCanvasElement;
   private ctx: CanvasRenderingContext2D;
@@ -31,10 +34,14 @@ export class Game {
   private firstFrame: boolean = true;
   private fpsSamples: number[] = [];
   private currentFps: number = 0;
+  private grid: Grid;
+  private gridRenderer: GridRenderer;
 
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d')!;
+    this.grid = new Grid();
+    this.gridRenderer = new GridRenderer();
   }
 
   start(): void {
@@ -76,7 +83,8 @@ export class Game {
     ctx.fillStyle = '#1a1a2e';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Future: render all systems
+    // Render grid
+    this.gridRenderer.render(ctx, this.grid);
 
     // FPS counter (always last — on top of everything)
     this.renderFps();
