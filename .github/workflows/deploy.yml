@@ -23,7 +23,7 @@ jobs:
         with:
           node-version: 24
 
-      - run: rm package-lock.json && npm install
+      - run: rm package-lock.json && npm install && npm install jsdom
 
       - run: npx tsc --noEmit
       - run: npm test
