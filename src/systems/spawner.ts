@@ -5,7 +5,6 @@ import type { Grid } from './grid';
 import type { Player } from '../entities/player';
 
 const SPAWN_INTERVAL = 2;
-const SPAWN_MARGIN = TILE_SIZE; // spawn one tile outside the grid
 
 export class Spawner {
   private timer: number = 0;
@@ -15,13 +14,13 @@ export class Spawner {
     if (this.timer < SPAWN_INTERVAL) return;
     this.timer -= SPAWN_INTERVAL;
 
-    const spawnPos = this.pickSpawnPosition(grid);
-    const enemy = new Enemy(spawnPos.x, spawnPos.y, ENEMY_CONFIGS['basic']);
+    const spawnTile = this.pickSpawnTile(grid);
+    const spawnX = spawnTile.col * TILE_SIZE + TILE_SIZE / 2;
+    const spawnY = spawnTile.row * TILE_SIZE + TILE_SIZE / 2;
+    const enemy = new Enemy(spawnX, spawnY, ENEMY_CONFIGS['basic']);
 
-    // Pathfind to player's current tile
-    const enemyTile = grid.worldToGrid(spawnPos.x, spawnPos.y);
     const playerTile = grid.worldToGrid(player.x, player.y);
-    const path = findPath(grid, enemyTile, playerTile);
+    const path = findPath(grid, spawnTile, playerTile);
 
     if (path) {
       enemy.setPath(path);
@@ -30,20 +29,20 @@ export class Spawner {
     enemies.push(enemy);
   }
 
-  private pickSpawnPosition(grid: Grid): { x: number; y: number } {
-    const worldW = grid.cols * TILE_SIZE;
-    const worldH = grid.rows * TILE_SIZE;
+  private pickSpawnTile(grid: Grid): { row: number; col: number } {
     const side = Math.floor(Math.random() * 4);
+    const maxRow = grid.rows - 1;
+    const maxCol = grid.cols - 1;
 
     switch (side) {
-      case 0: // top
-        return { x: Math.random() * worldW, y: -SPAWN_MARGIN };
-      case 1: // right
-        return { x: worldW + SPAWN_MARGIN, y: Math.random() * worldH };
-      case 2: // bottom
-        return { x: Math.random() * worldW, y: worldH + SPAWN_MARGIN };
-      default: // left
-        return { x: -SPAWN_MARGIN, y: Math.random() * worldH };
+      case 0: // top edge
+        return { row: 0, col: Math.floor(Math.random() * grid.cols) };
+      case 1: // right edge
+        return { row: Math.floor(Math.random() * grid.rows), col: maxCol };
+      case 2: // bottom edge
+        return { row: maxRow, col: Math.floor(Math.random() * grid.cols) };
+      default: // left edge
+        return { row: Math.floor(Math.random() * grid.rows), col: 0 };
     }
   }
 }
