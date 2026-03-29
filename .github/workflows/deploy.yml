@@ -23,7 +23,7 @@ jobs:
         with:
           node-version: 24
 
-      - run: npm install --force
+      - run: rm package-lock.json && npm install
 
       - run: npx tsc --noEmit
       - run: npm test
