@@ -15,6 +15,7 @@ import { TowerRenderer } from './rendering/tower-renderer';
 import { PlacementRenderer } from './rendering/placement-renderer';
 import { EnemyRenderer } from './rendering/enemy-renderer';
 import { ProjectileRenderer } from './rendering/projectile-renderer';
+import { WallRenderer } from './rendering/wall-renderer';
 
 export const MAX_DELTA_TIME = 0.1;
 export const FPS_SAMPLE_COUNT = 60;
@@ -70,6 +71,7 @@ export class Game {
   private placementRenderer: PlacementRenderer;
   private enemyRenderer: EnemyRenderer;
   private projectileRenderer: ProjectileRenderer;
+  private wallRenderer: WallRenderer;
 
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
@@ -91,6 +93,7 @@ export class Game {
     this.placementRenderer = new PlacementRenderer();
     this.enemyRenderer = new EnemyRenderer();
     this.projectileRenderer = new ProjectileRenderer();
+    this.wallRenderer = new WallRenderer();
   }
 
   start(): void {
@@ -190,6 +193,7 @@ export class Game {
     // World-space rendering
     this.gridRenderer.render(ctx, this.grid, camera, canvas.width, canvas.height);
     this.towerRenderer.render(ctx, this.grid, camera, canvas.width, canvas.height);
+    this.wallRenderer.render(ctx, this.grid, camera, canvas.width, canvas.height);
     this.placementRenderer.render(ctx, this.placement);
     this.projectileRenderer.render(ctx, this.projectiles);
     this.enemyRenderer.render(ctx, this.enemies);
