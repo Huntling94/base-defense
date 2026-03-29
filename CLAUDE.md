@@ -241,7 +241,7 @@ Build in this order, each step playable:
 | F-001 | Scaffolding (TS, Vite, Vitest, ESLint, Prettier, Husky) | Complete    |
 | F-002 | Canvas + game loop with delta time                      | Complete    |
 | F-003 | Grid system + tile rendering                            | Complete    |
-| F-004 | Player movement + camera follow                         | Not started |
+| F-004 | Player movement + camera follow                         | Complete    |
 | F-005 | Mouse input + tower placement                           | Not started |
 | F-006 | Enemies + A\* pathfinding                               | Not started |
 | F-007 | Tower shooting + targeting AI                           | Not started |
