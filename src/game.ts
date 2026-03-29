@@ -121,7 +121,7 @@ export class Game {
   }
 
   private update(dt: number): void {
-    this.player.update(dt, this.input);
+    this.player.update(dt, this.input, this.grid);
     this.camera.update(
       this.player.x,
       this.player.y,
