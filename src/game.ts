@@ -1,9 +1,12 @@
 import { Grid, WORLD_WIDTH, WORLD_HEIGHT } from './systems/grid';
 import { Camera } from './systems/camera';
 import { InputManager } from './systems/input';
+import { PlacementSystem } from './systems/placement';
 import { Player } from './entities/player';
 import { GridRenderer } from './rendering/grid-renderer';
 import { PlayerRenderer } from './rendering/player-renderer';
+import { TowerRenderer } from './rendering/tower-renderer';
+import { PlacementRenderer } from './rendering/placement-renderer';
 
 export const MAX_DELTA_TIME = 0.1;
 export const FPS_SAMPLE_COUNT = 60;
@@ -43,6 +46,7 @@ export class Game {
   private grid: Grid;
   private camera: Camera;
   private input: InputManager;
+  private placement: PlacementSystem;
 
   // Entities
   private player: Player;
@@ -50,6 +54,8 @@ export class Game {
   // Renderers
   private gridRenderer: GridRenderer;
   private playerRenderer: PlayerRenderer;
+  private towerRenderer: TowerRenderer;
+  private placementRenderer: PlacementRenderer;
 
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
@@ -58,12 +64,15 @@ export class Game {
     this.grid = new Grid();
     this.camera = new Camera();
     this.input = new InputManager(canvas);
+    this.placement = new PlacementSystem();
 
     // Spawn player at world center
     this.player = new Player(WORLD_WIDTH / 2, WORLD_HEIGHT / 2);
 
     this.gridRenderer = new GridRenderer();
     this.playerRenderer = new PlayerRenderer();
+    this.towerRenderer = new TowerRenderer();
+    this.placementRenderer = new PlacementRenderer();
   }
 
   start(): void {
@@ -100,6 +109,7 @@ export class Game {
       dt,
       this.input,
     );
+    this.placement.update(this.input, this.camera, this.grid);
   }
 
   private render(): void {
@@ -115,6 +125,8 @@ export class Game {
 
     // World-space rendering
     this.gridRenderer.render(ctx, this.grid, camera, canvas.width, canvas.height);
+    this.towerRenderer.render(ctx, this.grid, camera, canvas.width, canvas.height);
+    this.placementRenderer.render(ctx, this.placement);
     this.playerRenderer.render(ctx, this.player);
 
     // Restore to screen space
@@ -123,6 +135,7 @@ export class Game {
     // Screen-space UI (unaffected by camera)
     this.renderFps();
     this.renderCameraMode();
+    this.renderSelectedTower();
   }
 
   private resize(): void {
@@ -148,5 +161,17 @@ export class Game {
       ctx.textBaseline = 'top';
       ctx.fillText('FREE CAM (Space to snap back)', 8, 28);
     }
+  }
+
+  private renderSelectedTower(): void {
+    const config = this.placement.getSelectedConfig();
+    if (!config) return;
+
+    const { ctx } = this;
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '14px monospace';
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'bottom';
+    ctx.fillText(`Selected: ${config.name} (Esc to cancel)`, 8, this.canvas.height - 8);
   }
 }
