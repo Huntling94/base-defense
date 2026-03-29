@@ -30,10 +30,7 @@ export class TowerRenderer {
         const x = c * TILE_SIZE;
         const y = r * TILE_SIZE;
 
-        // Find matching tower config by kind — use color from first matching config
-        const config = TOWER_CONFIGS.find(
-          (tc) => tc.maxHealth === structure.maxHealth && tc.kind === structure.kind,
-        );
+        const config = TOWER_CONFIGS[structure.configIndex];
         const color = config ? config.color : '#888';
 
         ctx.fillStyle = color;

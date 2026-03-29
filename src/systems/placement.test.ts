@@ -53,6 +53,7 @@ describe('PlacementSystem', () => {
         size: { rows: 1, cols: 1 },
         health: 100,
         maxHealth: 100,
+        configIndex: 0,
       };
       const tile = grid.getTile(0, 0)!;
       tile.structureRef = { structure, isAnchor: true };

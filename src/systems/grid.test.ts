@@ -145,6 +145,7 @@ describe('Grid', () => {
         size: { rows: 1, cols: 1 },
         health: 100,
         maxHealth: 100,
+        configIndex: 0,
       };
       const ref: StructureRef = { structure, isAnchor: true };
       const tile = grid.getTile(1, 1);

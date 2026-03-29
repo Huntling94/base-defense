@@ -92,6 +92,7 @@ export class PlacementSystem {
       size: config.size,
       health: config.maxHealth,
       maxHealth: config.maxHealth,
+      configIndex,
     };
     const tile = grid.getTile(row, col)!;
     tile.structureRef = { structure, isAnchor: true };

@@ -10,6 +10,7 @@ function blockTile(grid: Grid, row: number, col: number): void {
     size: { rows: 1, cols: 1 },
     health: 100,
     maxHealth: 100,
+    configIndex: 0,
   };
   const tile = grid.getTile(row, col)!;
   tile.structureRef = { structure, isAnchor: true };

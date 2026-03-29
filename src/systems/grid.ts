@@ -53,6 +53,7 @@ export interface Structure {
   readonly size: { rows: number; cols: number };
   health: number;
   readonly maxHealth: number;
+  readonly configIndex: number;
 }
 
 export interface StructureRef {
