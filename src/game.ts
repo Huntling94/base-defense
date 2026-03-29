@@ -1,4 +1,4 @@
-import { Grid, WORLD_WIDTH, WORLD_HEIGHT } from './systems/grid';
+import { Grid, WORLD_WIDTH, WORLD_HEIGHT, StructureKind } from './systems/grid';
 import { Camera } from './systems/camera';
 import { InputManager } from './systems/input';
 import { PlacementSystem } from './systems/placement';
@@ -174,6 +174,9 @@ export class Game {
       updateProjectile(proj, dt, this.enemies);
     }
 
+    // Structure destruction cleanup
+    this.cleanupDeadStructures();
+
     // Cleanup: remove dead projectiles and dead/arrived enemies
     this.projectiles = this.projectiles.filter((p) => p.alive);
     this.enemies = this.enemies.filter((e) => !e.arrived && e.health > 0);
@@ -207,6 +210,34 @@ export class Game {
     this.renderCameraMode();
     this.renderSelectedTower();
     this.renderEnemyCount();
+  }
+
+  private cleanupDeadStructures(): void {
+    let structureDestroyed = false;
+
+    // Scan visible area for dead structures (could optimize with a structure list later)
+    for (let r = 0; r < this.grid.rows; r++) {
+      for (let c = 0; c < this.grid.cols; c++) {
+        const tile = this.grid.getTile(r, c)!;
+        if (!tile.structureRef) continue;
+
+        const structure = tile.structureRef.structure;
+        if (structure.health > 0) continue;
+
+        // Remove from grid
+        if (structure.kind === StructureKind.Tower) {
+          this.towerManager.removeTower(r, c);
+        }
+        tile.structureRef = null;
+        structureDestroyed = true;
+      }
+    }
+
+    if (structureDestroyed) {
+      for (const enemy of this.enemies) {
+        enemy.pathStale = true;
+      }
+    }
   }
 
   private resize(): void {

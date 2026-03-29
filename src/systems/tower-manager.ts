@@ -19,6 +19,10 @@ export class TowerManager {
     this.towers.push({ row, col, configIndex, cooldown: 0 });
   }
 
+  removeTower(row: number, col: number): void {
+    this.towers = this.towers.filter((t) => t.row !== row || t.col !== col);
+  }
+
   update(dt: number, enemies: Enemy[], projectiles: Projectile[], grid: Grid): void {
     for (const tower of this.towers) {
       const config = TOWER_CONFIGS[tower.configIndex];

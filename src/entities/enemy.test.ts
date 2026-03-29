@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { Enemy, ENEMY_CONFIGS } from './enemy';
-import { Grid, TILE_SIZE } from '../systems/grid';
+import { Grid, TILE_SIZE, StructureKind } from '../systems/grid';
+import type { Structure } from '../systems/grid';
 
 const basicConfig = ENEMY_CONFIGS['basic'];
 
@@ -79,6 +80,71 @@ describe('Enemy', () => {
       enemy.update(0.016, grid);
       expect(enemy.x).toBe(x);
       expect(enemy.y).toBe(y);
+    });
+  });
+
+  describe('structure attacking', () => {
+    function placeWall(grid: Grid, row: number, col: number): Structure {
+      const structure: Structure = {
+        kind: StructureKind.Wall,
+        anchor: { row, col },
+        size: { rows: 1, cols: 1 },
+        health: 100,
+        maxHealth: 100,
+        configIndex: -1,
+      };
+      const tile = grid.getTile(row, col)!;
+      tile.structureRef = { structure, isAnchor: true };
+      return structure;
+    }
+
+    it('finds nearest structure when path is blocked', () => {
+      const grid = new Grid(5, 5);
+      placeWall(grid, 2, 2);
+
+      const enemy = new Enemy(TILE_SIZE / 2, TILE_SIZE / 2, basicConfig);
+      // No path set, pathStale not set — enemy has no path and no target
+      // On update, it should find the wall as attack target
+      enemy.pathStale = true;
+      enemy.update(0.016, grid);
+
+      expect(enemy.attackTarget).not.toBeNull();
+      expect(enemy.attackTarget!.row).toBe(2);
+      expect(enemy.attackTarget!.col).toBe(2);
+    });
+
+    it('damages structure when in attack range', () => {
+      const grid = new Grid(5, 5);
+      const structure = placeWall(grid, 0, 1);
+
+      // Place enemy right next to the wall
+      const enemy = new Enemy(TILE_SIZE / 2, TILE_SIZE / 2, basicConfig);
+      enemy.attackTarget = { row: 0, col: 1 };
+      enemy.pathStale = true;
+
+      const healthBefore = structure.health;
+      // Run for 1 second
+      for (let i = 0; i < 60; i++) {
+        enemy.update(1 / 60, grid);
+      }
+
+      expect(structure.health).toBeLessThan(healthBefore);
+    });
+
+    it('clears attack target when structure is destroyed', () => {
+      const grid = new Grid(5, 5);
+      placeWall(grid, 0, 1);
+
+      const enemy = new Enemy(TILE_SIZE / 2, TILE_SIZE / 2, basicConfig);
+      enemy.attackTarget = { row: 0, col: 1 };
+      enemy.pathStale = true;
+
+      // Remove the wall
+      grid.getTile(0, 1)!.structureRef = null;
+
+      enemy.update(0.016, grid);
+      expect(enemy.attackTarget).toBeNull();
+      expect(enemy.pathStale).toBe(true);
     });
   });
 
