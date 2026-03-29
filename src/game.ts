@@ -2,15 +2,19 @@ import { Grid, WORLD_WIDTH, WORLD_HEIGHT } from './systems/grid';
 import { Camera } from './systems/camera';
 import { InputManager } from './systems/input';
 import { PlacementSystem } from './systems/placement';
+import { TowerManager } from './systems/tower-manager';
 import { Spawner } from './systems/spawner';
 import { findPath } from './systems/pathfinding';
 import { Player } from './entities/player';
 import type { Enemy } from './entities/enemy';
+import type { Projectile } from './entities/projectile';
+import { updateProjectile } from './entities/projectile';
 import { GridRenderer } from './rendering/grid-renderer';
 import { PlayerRenderer } from './rendering/player-renderer';
 import { TowerRenderer } from './rendering/tower-renderer';
 import { PlacementRenderer } from './rendering/placement-renderer';
 import { EnemyRenderer } from './rendering/enemy-renderer';
+import { ProjectileRenderer } from './rendering/projectile-renderer';
 
 export const MAX_DELTA_TIME = 0.1;
 export const FPS_SAMPLE_COUNT = 60;
@@ -51,11 +55,13 @@ export class Game {
   private camera: Camera;
   private input: InputManager;
   private placement: PlacementSystem;
+  private towerManager: TowerManager;
   private spawner: Spawner;
 
   // Entities
   private player: Player;
   private enemies: Enemy[] = [];
+  private projectiles: Projectile[] = [];
 
   // Renderers
   private gridRenderer: GridRenderer;
@@ -63,6 +69,7 @@ export class Game {
   private towerRenderer: TowerRenderer;
   private placementRenderer: PlacementRenderer;
   private enemyRenderer: EnemyRenderer;
+  private projectileRenderer: ProjectileRenderer;
 
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
@@ -72,6 +79,7 @@ export class Game {
     this.camera = new Camera();
     this.input = new InputManager(canvas);
     this.placement = new PlacementSystem();
+    this.towerManager = new TowerManager();
     this.spawner = new Spawner();
 
     // Spawn player at world center
@@ -82,6 +90,7 @@ export class Game {
     this.towerRenderer = new TowerRenderer();
     this.placementRenderer = new PlacementRenderer();
     this.enemyRenderer = new EnemyRenderer();
+    this.projectileRenderer = new ProjectileRenderer();
   }
 
   start(): void {
@@ -120,8 +129,15 @@ export class Game {
     );
     this.placement.update(this.input, this.camera, this.grid);
 
-    // If a tower was placed, mark all enemy paths as stale
+    // Register newly placed tower with TowerManager
     if (this.placement.placedThisFrame) {
+      this.towerManager.registerTower(
+        this.placement.lastPlacedRow,
+        this.placement.lastPlacedCol,
+        this.placement.lastPlacedConfigIndex,
+      );
+
+      // Mark all enemy paths as stale
       for (const enemy of this.enemies) {
         enemy.pathStale = true;
       }
@@ -133,21 +149,29 @@ export class Game {
     // Update enemies
     const playerTile = this.grid.worldToGrid(this.player.x, this.player.y);
     for (const enemy of this.enemies) {
-      // Recompute path if stale or no path
       if (enemy.pathStale || !enemy.hasPath()) {
         const enemyTile = this.grid.worldToGrid(enemy.x, enemy.y);
         const path = findPath(this.grid, enemyTile, playerTile);
         if (path) {
           enemy.setPath(path);
         } else {
-          enemy.pathStale = false; // No path available, stop trying until grid changes
+          enemy.pathStale = false;
         }
       }
       enemy.update(dt, this.grid);
     }
 
-    // Remove arrived enemies
-    this.enemies = this.enemies.filter((e) => !e.arrived);
+    // Tower combat
+    this.towerManager.update(dt, this.enemies, this.projectiles, this.grid);
+
+    // Update projectiles
+    for (const proj of this.projectiles) {
+      updateProjectile(proj, dt, this.enemies);
+    }
+
+    // Cleanup: remove dead projectiles and dead/arrived enemies
+    this.projectiles = this.projectiles.filter((p) => p.alive);
+    this.enemies = this.enemies.filter((e) => !e.arrived && e.health > 0);
   }
 
   private render(): void {
@@ -165,6 +189,7 @@ export class Game {
     this.gridRenderer.render(ctx, this.grid, camera, canvas.width, canvas.height);
     this.towerRenderer.render(ctx, this.grid, camera, canvas.width, canvas.height);
     this.placementRenderer.render(ctx, this.placement);
+    this.projectileRenderer.render(ctx, this.projectiles);
     this.enemyRenderer.render(ctx, this.enemies);
     this.playerRenderer.render(ctx, this.player);
 

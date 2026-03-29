@@ -20,6 +20,9 @@ export class PlacementSystem {
     isValid: false,
   };
   placedThisFrame: boolean = false;
+  lastPlacedRow: number = 0;
+  lastPlacedCol: number = 0;
+  lastPlacedConfigIndex: number = 0;
 
   update(input: InputManager, camera: Camera, grid: Grid): void {
     this.placedThisFrame = false;
@@ -52,6 +55,9 @@ export class PlacementSystem {
         this.state.selectedIndex,
       );
       this.placedThisFrame = true;
+      this.lastPlacedRow = this.state.hoverTile.row;
+      this.lastPlacedCol = this.state.hoverTile.col;
+      this.lastPlacedConfigIndex = this.state.selectedIndex;
     }
   }
 
