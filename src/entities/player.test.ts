@@ -4,6 +4,12 @@ import { Player, PLAYER_SPEED, PLAYER_RADIUS } from './player';
 import { InputManager } from '../systems/input';
 import { WORLD_WIDTH, WORLD_HEIGHT } from '../systems/grid';
 
+function createCanvas(): HTMLCanvasElement {
+  const canvas = document.createElement('canvas');
+  document.body.appendChild(canvas);
+  return canvas;
+}
+
 function pressKey(key: string): void {
   window.dispatchEvent(new KeyboardEvent('keydown', { key }));
 }
@@ -18,7 +24,7 @@ describe('Player', () => {
 
   beforeEach(() => {
     player = new Player(500, 500);
-    input = new InputManager();
+    input = new InputManager(createCanvas());
   });
 
   describe('movement', () => {

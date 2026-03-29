@@ -57,7 +57,7 @@ export class Game {
 
     this.grid = new Grid();
     this.camera = new Camera();
-    this.input = new InputManager();
+    this.input = new InputManager(canvas);
 
     // Spawn player at world center
     this.player = new Player(WORLD_WIDTH / 2, WORLD_HEIGHT / 2);
@@ -85,6 +85,7 @@ export class Game {
     this.update(dt);
     this.render();
     this.currentFps = updateFpsSamples(this.fpsSamples, dt);
+    this.input.endFrame();
 
     requestAnimationFrame((time) => this.loop(time));
   }

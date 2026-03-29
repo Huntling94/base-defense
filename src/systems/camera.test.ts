@@ -4,6 +4,12 @@ import { Camera } from './camera';
 import { InputManager } from './input';
 import { WORLD_WIDTH, WORLD_HEIGHT } from './grid';
 
+function createCanvas(): HTMLCanvasElement {
+  const canvas = document.createElement('canvas');
+  document.body.appendChild(canvas);
+  return canvas;
+}
+
 function pressKey(key: string): void {
   window.dispatchEvent(new KeyboardEvent('keydown', { key }));
 }
@@ -20,7 +26,7 @@ describe('Camera', () => {
 
   beforeEach(() => {
     camera = new Camera();
-    input = new InputManager();
+    input = new InputManager(createCanvas());
   });
 
   describe('coordinate conversion', () => {
