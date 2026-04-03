@@ -1,75 +1,127 @@
-# HANDOVER — Prior Project Context
+# HANDOVER — Base Defense
 
-> This document summarizes what was built and learned in Project 1 (Bullet Survivors) to provide context for Project 2 (Base Defense).
+> Session handover document. Updated each session with what was built, decisions made, and what's next.
 
-## Project 1: Bullet Survivors (Complete)
+## Project 1 Context (Bullet Survivors)
 
-A fully playable Vampire Survivors-style 2D auto-shooter built with TypeScript, Canvas 2D, and Vite. No game framework — raw Canvas API throughout.
+See the repo at https://github.com/Huntling94/bullet-survivor-game. Will built a complete 2D auto-shooter and learned: delta time, game feel/juice, object pools, update/render separation, camera systems, data-driven entities, collision detection, wave spawning.
 
-**Live at:** https://huntling94.github.io/bullet-survivor-game/
-**Repo:** https://github.com/Huntling94/bullet-survivor-game
+## Current State (as of Session 1)
 
-### What was built
+**Live at:** https://huntling94.github.io/base-defense/
+**Repo:** https://github.com/Huntling94/base-defense
 
-| #     | Feature                                        | Key concepts                                                              |
-| ----- | ---------------------------------------------- | ------------------------------------------------------------------------- |
-| F-001 | Canvas + game loop with delta time             | requestAnimationFrame, delta time, update/render separation               |
-| F-002 | Player movement with camera follow             | Input handling, entity pattern, camera transform, diagonal normalization  |
-| F-003 | Enemy spawning and wave system                 | Enemy AI, invincibility frames, collision detection, data-driven entities |
-| F-004 | Projectile system with auto-aim                | Object pooling, auto-aim targeting, projectile lifecycle, pierce mechanic |
-| F-005 | XP gems, leveling, upgrade selection           | Magnetic pickup, XP curve, upgrade system, game pause state               |
-| F-006 | Juice: screen shake, particles, damage numbers | Screen shake, particle system, hit flash, knockback, time freeze          |
-| F-007 | Polish: enemy variety, wave scaling, game over | 4 enemy types, wave stat scaling, restart mechanism                       |
+### Features Complete (F-001 through F-008)
 
-**204 tests** | **~22KB bundle** | **7 implementation briefs**
+| #     | Feature                                                 | Key Files                                                                       |
+| ----- | ------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| F-001 | Scaffolding (TS, Vite, Vitest, ESLint, Prettier, Husky) | `package.json`, `tsconfig.json`, `.husky/pre-commit`                            |
+| F-002 | Canvas + game loop with delta time                      | `src/game.ts` — Game class, FPS counter                                         |
+| F-003 | Grid system + tile rendering                            | `src/systems/grid.ts` — Grid, Tile, Terrain, Structure interfaces               |
+| F-004 | Player movement + camera follow                         | `src/entities/player.ts`, `src/systems/camera.ts`, `src/systems/input.ts`       |
+| F-005 | Mouse input + tower placement                           | `src/systems/placement.ts` — PlacementSystem with tower/wall modes              |
+| F-006 | Enemies + A\* pathfinding                               | `src/systems/pathfinding.ts`, `src/entities/enemy.ts`, `src/systems/spawner.ts` |
+| F-007 | Tower shooting + targeting AI                           | `src/systems/tower-manager.ts`, `src/entities/projectile.ts`                    |
+| F-008 | Walls + path recalculation                              | `src/entities/walls.ts`, wall rendering, enemy structure-attacking              |
 
-### What Will learned
+**121 tests passing** | **~20KB bundle** | **8 implementation briefs in `docs/briefs/`**
 
-1. **Delta time** — frame-rate-independent movement, clamping to prevent explosions
-2. **Game feel / juice** — screen shake, particles, flash, knockback, freeze frames
-3. **Object pools** — acquire/release lifecycle, swap-with-last for O(1)
-4. **Update/render separation** — testable game logic without a browser
-5. **Camera systems** — world→screen transform, smooth follow, shake
-6. **Data-driven design** — one class, many configs, adding types without code changes
-7. **Dependency injection** — interfaces for testability, concrete classes for production
-8. **Collision detection** — circle-circle with distance², hit results for effects
-9. **Wave spawning** — continuous with wave milestones, stat scaling, cluster spawning
+### Architecture Overview
 
-### How these transfer to Base Defense
+```
+src/
+  main.ts              — Entry point, creates Game
+  game.ts              — Game loop orchestrator, wires all systems
+  math.ts              — clamp, lerp utilities
+  systems/
+    grid.ts            — Grid class, Tile/Terrain/Structure/StructureRef types, TERRAIN_CONFIG
+    camera.ts          — Camera with follow/free-look modes, coordinate conversion
+    input.ts           — InputManager — keyboard + mouse tracking
+    placement.ts       — PlacementSystem — tower/wall selection, validation, placement
+    pathfinding.ts     — A* pure function with terrain costs
+    spawner.ts         — Timer-based enemy spawning from edges
+    tower-manager.ts   — TowerInstance tracking, targeting, firing
+  entities/
+    player.ts          — WASD movement, structure collision
+    enemy.ts           — Path following, structure attacking fallback
+    towers.ts          — TowerConfig data (5 types)
+    walls.ts           — WallConfig data
+    projectile.ts      — Projectile creation, movement, collision
+  rendering/
+    grid-renderer.ts   — Terrain tiles with viewport culling
+    player-renderer.ts — Blue circle
+    enemy-renderer.ts  — Red circles
+    tower-renderer.ts  — Colored squares per tower type
+    wall-renderer.ts   — Brown tiles with health bars
+    placement-renderer.ts — Ghost preview with validity coloring
+    projectile-renderer.ts — Colored dots
+  utils/
+    binary-heap.ts     — Min-heap for A* priority queue
+```
 
-| Bullet Survivors pattern                  | Base Defense equivalent                               |
-| ----------------------------------------- | ----------------------------------------------------- |
-| Entity system (Player, Enemy, Projectile) | Tower, Wall, Enemy, Projectile — same shape           |
-| Data-driven configs (EnemyConfig)         | TowerConfig, EnemyConfig, WallConfig                  |
-| Object pooling                            | Tower projectiles, particles                          |
-| Wave spawner with scaling                 | Wave definitions with enemy composition               |
-| Collision detection (distance²)           | "Is enemy within tower range?"                        |
-| Update/render separation                  | Identical pattern                                     |
-| Juice effects (particles, shake, numbers) | Tower shot effects, explosion particles, gold numbers |
-| Camera (follow, shake)                    | Pan/zoom camera (player controls camera)              |
+### Key Design Decisions Made
 
-### Lessons learned (carry forward)
+1. **Two-layer tile architecture** — `terrain` (permanent: grass/sand/rock) + `structureRef` (nullable: tower/wall). Characters NOT on tiles — they exist in continuous world space.
+2. **Data-driven terrain** — `TERRAIN_CONFIG` with movementMultiplier, buildable, colors. Adding terrain = adding config.
+3. **Multi-tile structure support** — Structure has `anchor`, `size`, `isAnchor` for future 2×2+ buildings. All 1×1 for now.
+4. **configIndex on Structure** — any system looks up tower properties via `TOWER_CONFIGS[structure.configIndex]`.
+5. **Lazy path invalidation** — enemies get `pathStale = true` when grid changes, recompute on next frame.
+6. **Enemy attack fallback** — when A\* returns null, enemies find and attack nearest structure.
+7. **Camera follow + free-look** — WASD moves player, arrow keys pan camera independently, Space snaps back.
+8. **Player collides with structures** — circle-vs-AABB collision resolution.
+9. **PlacementCategory** — Q for walls, 1-5 for towers. Separate modes in PlacementSystem.
 
-| #   | Lesson                                                     | Prevention Rule                            |
-| --- | ---------------------------------------------------------- | ------------------------------------------ |
-| 1   | Camera-follow on blank background makes movement invisible | Always include a visual reference frame    |
-| 2   | Non-null assertions blocked by ESLint strict               | Use `as T` casts or helper functions       |
-| 3   | Float precision in timer tests                             | Use extra frames to push past thresholds   |
-| 4   | Unstaged files cause lint-staged failures                  | Stage all modified files before committing |
+### Controls
 
-## Design decisions already made for Base Defense
+| Key        | Action                     |
+| ---------- | -------------------------- |
+| WASD       | Move player                |
+| 1-5        | Select tower type          |
+| Q          | Select wall placement      |
+| Escape     | Deselect                   |
+| Left click | Place structure            |
+| Arrow keys | Free camera pan            |
+| Space      | Snap camera back to player |
 
-1. **Open field, no fixed paths** — enemies pathfind dynamically, player builds anywhere
-2. **Player is a combat unit** — WASD movement, can fight directly and collect gold (genre hybrid)
-3. **Walls can be broken** — enemies target and destroy walls, forcing reinforcement
-4. **Per-enemy-type AI behaviors** — configured in EnemyConfig, not hardcoded:
-   - "charge player" — pathfinds to player, attacks blocking structures
-   - "wall breaker" — targets nearest wall first
-   - "weak spot scout" — evaluates wall health, targets weakest point
-   - "horde" — accumulates at spawn, then all charge together
-5. **A\* pathfinding is mandatory** — dynamic paths recalculate when walls are built/destroyed
-6. **Will is creative director** — makes design decisions, Claude advises and implements
+### CI/CD
 
-## What's next
+- GitHub Actions deploys to Pages on every push to master
+- Pre-commit hook runs: tsc → vitest → lint-staged (eslint + prettier)
+- `.npmrc` has `legacy-peer-deps=true` (TypeScript 6 + typescript-eslint peer conflict)
+- CI uses `npm install --force` then `npm install jsdom` (jsdom is optional peer dep of vitest, silently skipped otherwise — see L-001)
 
-Start with scaffolding (F-001), then grid system (F-003) — the foundation for tower/wall placement. See CLAUDE.md for the full implementation order.
+### Lessons Learned
+
+| #     | Lesson                                                      | Prevention                           |
+| ----- | ----------------------------------------------------------- | ------------------------------------ |
+| L-001 | Optional peer deps of vitest (jsdom) silently skipped on CI | Add explicit install step in CI      |
+| L-002 | Enemies spawned outside grid bounds got no path             | Always spawn at valid grid positions |
+
+## What's Next: F-009 Economy System
+
+The plan is written at `.claude/plans/staged-jingling-giraffe.md`. Summary:
+
+1. **Gold tracking** — add `gold: number` to Game, start at ~200, display in HUD
+2. **Purchase validation** — PlacementSystem checks gold before placing, deducts cost
+3. **Enemy gold drops** — add `goldValue` to EnemyConfig, award gold when enemies die
+4. **Gold Mine passive income** — add `incomePerSecond` to TowerConfig, Gold Mines generate gold over time
+5. **Sell/refund** — right-click structure to sell for 50% refund
+
+**Key files to modify:** `game.ts`, `placement.ts`, `enemy.ts` (EnemyConfig), `towers.ts` (TowerConfig)
+
+All tower/wall costs are already defined in configs — they just aren't checked yet.
+
+### Remaining Features After F-009
+
+| #     | Feature                              | Status      |
+| ----- | ------------------------------------ | ----------- |
+| F-010 | Build/wave phase state machine       | Not started |
+| F-011 | Tower variety + enemy variety        | Not started |
+| F-012 | Tower + player upgrades              | Not started |
+| F-013 | Juice pass                           | Not started |
+| F-014 | Polish (game over, restart, balance) | Not started |
+
+### Planned Improvements (from Will)
+
+- **Build menu** (WC3-style clickable panel) — planned for F-009/F-010 when costs are visible
+- **Tower sprites** to replace colored squares — planned for F-013 juice pass
